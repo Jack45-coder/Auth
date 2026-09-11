@@ -8,6 +8,7 @@ import com.jackey.auth.mapper.UserMapper;
 import com.jackey.auth.repository.UserRepository;
 import com.jackey.auth.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
@@ -17,6 +18,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     public AuthResponse register(SignupRequest request){
 
         // 1. Request validation
@@ -24,17 +28,7 @@ public class UserServiceImpl implements UserService {
             throw new AuthException("Request Cannot be Null");
         }
 
-        // 2. Field validation
-        if(request.getName() == null ||
-                request.getEmail() == null ||
-                request.getPassword() == null){
-
-            throw new AuthException(
-                    "All fields (username, email, password) are required"
-            );
-        }
-
-        // 3. Email Validation
+        // 2. Email Validation
         userRepository.findByEmail(request.getEmail()).ifPresent(it -> {
             throw new AuthException("Email Already Exists!");
         });
@@ -43,7 +37,10 @@ public class UserServiceImpl implements UserService {
         User user = new User();
         user.setName(request.getName());
         user.setEmail(request.getEmail());
-        user.setPassword(request.getPassword());
+
+        // encoded password save in db
+        String encodedPass = passwordEncoder.encode(request.getPassword());
+        user.setPassword(encodedPass);
         user.setActive(true);
 
         User savedUser;
@@ -57,16 +54,11 @@ public class UserServiceImpl implements UserService {
         return UserMapper.toAuthResponse(savedUser);
     }
 
-    public AuthResponse signin(LoginRequest request){
+    public AuthResponse login(LoginRequest request){
 
         // 1. Request validation
         if (request == null){
             throw new AuthException("Request Cannot be Null");
-        }
-
-        // 2. Field validation
-        if(request.getEmail() == null || request.getPassword() == null){
-            throw new AuthException("Email and Password are required");
         }
 
         // 3. find user by email
@@ -75,7 +67,11 @@ public class UserServiceImpl implements UserService {
         );
 
         // 4. Check password
-        if(!validUser.getPassword().equals(request.getPassword())){
+        boolean passwordMatch = passwordEncoder.matches(
+                request.getPassword(),
+                validUser.getPassword()
+        );
+        if(!passwordMatch){
             throw new AuthException("Invalid Email or Password");
         }
 

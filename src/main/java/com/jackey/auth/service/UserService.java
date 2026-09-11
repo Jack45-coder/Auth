@@ -10,5 +10,5 @@ import org.springframework.stereotype.Service;
 public interface UserService {
     AuthResponse register(SignupRequest request);
 
-    AuthResponse signin(LoginRequest request);
+    AuthResponse login(LoginRequest request);
 }
