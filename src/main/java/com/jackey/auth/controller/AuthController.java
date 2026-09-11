@@ -1,6 +1,7 @@
 package com.jackey.auth.controller;
 
 import com.jackey.auth.dto.AuthResponse;
+import com.jackey.auth.dto.LoginRequest;
 import com.jackey.auth.dto.SignupRequest;
 import com.jackey.auth.response.ApiResponse;
 import com.jackey.auth.service.UserService;
@@ -23,5 +24,9 @@ public class AuthController {
         return new ApiResponse<>(true, "Registration Successfully", response);
     }
 
-
+    @PostMapping("/signin")
+    public ApiResponse<AuthResponse> signin(@RequestBody LoginRequest request){
+        AuthResponse response = userService.signin(request);
+        return ApiResponse.success("Login Successfully", response);
+    }
 }
