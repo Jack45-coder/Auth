@@ -2,15 +2,15 @@ package com.jackey.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class LoginRequest {
     @NotBlank
     @Email
-    private String email;
+    private String username;
 
     @NotBlank
     private String password;

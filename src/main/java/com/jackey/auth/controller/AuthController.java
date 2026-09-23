@@ -1,8 +1,9 @@
 package com.jackey.auth.controller;
 
-import com.jackey.auth.dto.AuthResponse;
 import com.jackey.auth.dto.LoginRequest;
+import com.jackey.auth.dto.LoginResponse;
 import com.jackey.auth.dto.SignupRequest;
+import com.jackey.auth.dto.SignupResponse;
 import com.jackey.auth.response.ApiResponse;
 import com.jackey.auth.service.UserService;
 import jakarta.validation.Valid;
@@ -20,14 +21,14 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ApiResponse<AuthResponse> signup(@Valid @RequestBody SignupRequest request){
-        AuthResponse response = userService.register(request);
+    public ApiResponse<SignupRequest> signup(@Valid @RequestBody SignupRequest request){
+        SignupResponse response = userService.register(request);
         return new ApiResponse<>(true, "Registration Successfully", response);
     }
 
     @PostMapping("/login")
-    public ApiResponse<AuthResponse> login(@Valid @RequestBody LoginRequest request){
-        AuthResponse response = userService.login(request);
+    public ApiResponse<LoginRequest> login(@Valid @RequestBody LoginRequest request){
+        LoginResponse response = userService.login(request);
         return ApiResponse.success("Login Successfully", response);
     }
 }

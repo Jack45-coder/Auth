@@ -1,15 +1,13 @@
 package com.jackey.auth.mapper;
 
-import com.jackey.auth.dto.AuthResponse;
+import com.jackey.auth.dto.LoginResponse;
+import com.jackey.auth.dto.SignupResponse;
 import com.jackey.auth.entity.User;
+import org.mapstruct.Mapper;
 
-public class UserMapper {
+@Mapper(componentModel = "spring")
+public interface UserMapper {
+    LoginResponse toLoginResponse(User user);
 
-    public static AuthResponse toAuthResponse(User user){
-        return new AuthResponse(
-                user.getId(),
-                user.getName(),
-                user.getEmail()
-        );
-    }
+    SignupResponse toSignupResponse(User user);
 }

@@ -2,19 +2,17 @@ package com.jackey.auth.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class SignupRequest {
-    @NotBlank(message = "Name is required")
-    private String name;
+    @NotBlank(message = "username is required")
+    private String username;
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Please enter a valid email")
-    private String email;
-
-    @NotBlank(message = "Password is required")
+    @NotBlank(message = "password is required")
     private String password;
 }

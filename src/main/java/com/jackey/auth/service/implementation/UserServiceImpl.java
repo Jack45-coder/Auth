@@ -1,7 +1,8 @@
 package com.jackey.auth.service.implementation;
-import com.jackey.auth.dto.AuthResponse;
 import com.jackey.auth.dto.LoginRequest;
+import com.jackey.auth.dto.LoginResponse;
 import com.jackey.auth.dto.SignupRequest;
+import com.jackey.auth.dto.SignupResponse;
 import com.jackey.auth.entity.User;
 import com.jackey.auth.exception.AuthException;
 import com.jackey.auth.mapper.UserMapper;
@@ -21,7 +22,10 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public AuthResponse register(SignupRequest request){
+    @Autowired
+    private UserMapper userMapper;
+
+    public SignupResponse register(SignupRequest request){
 
         // 1. Request validation
         if (request == null){
@@ -29,14 +33,14 @@ public class UserServiceImpl implements UserService {
         }
 
         // 2. Email Validation
-        userRepository.findByEmail(request.getEmail()).ifPresent(it -> {
-            throw new AuthException("Email Already Exists!");
+        userRepository.findByUsername(request.getUsername()).ifPresent(it -> {
+            throw new AuthException("username Already Exists!");
         });
 
         // Create new user (Entity)
         User user = new User();
-        user.setName(request.getName());
-        user.setEmail(request.getEmail());
+        user.setUsername(request.getUsername());
+        user.setPassword(request.getPassword());
 
         // encoded password save in db
         String encodedPass = passwordEncoder.encode(request.getPassword());
@@ -51,10 +55,10 @@ public class UserServiceImpl implements UserService {
             throw new AuthException("Error While Save User...");
         }
 
-        return UserMapper.toAuthResponse(savedUser);
+        return userMapper.toSignupResponse(savedUser);
     }
 
-    public AuthResponse login(LoginRequest request){
+    public LoginResponse login(LoginRequest request){
 
         // 1. Request validation
         if (request == null){
@@ -62,8 +66,8 @@ public class UserServiceImpl implements UserService {
         }
 
         // 3. find user by email
-        User validUser = userRepository.findByEmail(request.getEmail()).orElseThrow(
-                () -> new AuthException("Invalid User or Email mismatch...")
+        User validUser = userRepository.findByUsername(request.getUsername()).orElseThrow(
+                () -> new AuthException("Invalid user or username mismatch...")
         );
 
         // 4. Check password
@@ -72,7 +76,7 @@ public class UserServiceImpl implements UserService {
                 validUser.getPassword()
         );
         if(!passwordMatch){
-            throw new AuthException("Invalid Email or Password");
+            throw new AuthException("Invalid username or password");
         }
 
         // 5. Check user active or not
@@ -80,6 +84,6 @@ public class UserServiceImpl implements UserService {
             throw new AuthException("User inactive...");
         }
 
-        return UserMapper.toAuthResponse(validUser);
+        return userMapper.toLoginResponse(validUser);
     }
 }
