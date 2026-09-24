@@ -18,7 +18,9 @@ public class AuthUtil {
 
     // secret key to convert key object
     private SecretKey getSecretKey(){
-        return Keys.hmacShaKeyFor(jwtSecretKey.getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(
+                jwtSecretKey.getBytes(StandardCharsets.UTF_8)
+        );
     }
 
     public String generateAccessToken(User user){
@@ -26,7 +28,7 @@ public class AuthUtil {
                 .subject(user.getUsername())
                 .claim("userId", user.getId().toString())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() * 1000 *60*10))
+                .expiration(new Date(System.currentTimeMillis() + 1000 *60*10))
                 .signWith(getSecretKey())
                 .compact();
     }

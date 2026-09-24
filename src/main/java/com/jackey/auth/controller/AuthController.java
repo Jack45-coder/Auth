@@ -21,13 +21,13 @@ public class AuthController {
     private UserService userService;
 
     @PostMapping("/signup")
-    public ApiResponse<SignupRequest> signup(@Valid @RequestBody SignupRequest request){
+    public ApiResponse<SignupResponse> signup(@Valid @RequestBody SignupRequest request){
         SignupResponse response = userService.register(request);
         return new ApiResponse<>(true, "Registration Successfully", response);
     }
 
     @PostMapping("/login")
-    public ApiResponse<LoginRequest> login(@Valid @RequestBody LoginRequest request){
+    public ApiResponse<LoginResponse> login(@Valid @RequestBody LoginRequest request){
         LoginResponse response = userService.login(request);
         return ApiResponse.success("Login Successfully", response);
     }

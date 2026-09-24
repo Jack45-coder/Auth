@@ -7,23 +7,22 @@ import com.jackey.auth.entity.User;
 import com.jackey.auth.exception.AuthException;
 import com.jackey.auth.mapper.UserMapper;
 import com.jackey.auth.repository.UserRepository;
+import com.jackey.auth.security.AuthUtil;
 import com.jackey.auth.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
+    private final AuthUtil authUtil;
 
     public SignupResponse register(SignupRequest request){
 
@@ -84,6 +83,13 @@ public class UserServiceImpl implements UserService {
             throw new AuthException("User inactive...");
         }
 
-        return userMapper.toLoginResponse(validUser);
+        // valid user token
+        String token = authUtil.generateAccessToken(validUser);
+
+        LoginResponse loginResponse = userMapper.toLoginResponse(validUser);
+
+        loginResponse.setJwt(token);
+
+        return loginResponse;
     }
 }
