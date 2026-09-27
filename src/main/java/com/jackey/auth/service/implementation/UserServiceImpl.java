@@ -10,6 +10,7 @@ import com.jackey.auth.repository.UserRepository;
 import com.jackey.auth.security.AuthUtil;
 import com.jackey.auth.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -19,12 +20,16 @@ import org.springframework.stereotype.Service;
 public class UserServiceImpl implements UserService {
 
 
+    private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserMapper userMapper;
     private final AuthUtil authUtil;
 
     public SignupResponse register(SignupRequest request){
+
+
+
 
         // 1. Request validation
         if (request == null){
@@ -39,8 +44,6 @@ public class UserServiceImpl implements UserService {
         // Create new user (Entity)
         User user = new User();
         user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-
         // encoded password save in db
         String encodedPass = passwordEncoder.encode(request.getPassword());
         user.setPassword(encodedPass);
